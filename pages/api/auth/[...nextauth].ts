@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
 
-const HASURA_ENDPOINT = process.env.HASURA_PROJECT_ENDPOINT;
+const HASURA_ENDPOINT = process.env.NEXT_PUBLIC_HASURA_PROJECT_ENDPOINT;
 
 if (!HASURA_ENDPOINT) {
   throw new Error("HASURA_PROJECT_ENDPOINT env var missing!");
@@ -136,10 +136,10 @@ export default NextAuth({
   // when an action is performed.
   // https://next-auth.js.org/configuration/callbacks
   callbacks: {
-    // async signIn({ user, account, profile, email, credentials }) { return true },
-    // async redirect({ url, baseUrl }) { return baseUrl },
-    // async session({ session, token, user }) { return session },
-    // async jwt({ token, user, account, profile, isNewUser }) { return token }
+    async signIn({ user, account, profile, email, credentials }) { return true },
+    async redirect({ url, baseUrl }) { return baseUrl },
+    async session({ session, token, user }) { return session },
+    async jwt({ token, user, account, profile, isNewUser }) { return token }
   },
 
   // Events are useful for logging
