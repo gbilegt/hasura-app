@@ -7,7 +7,8 @@ import {
     Input,
     Button,
     useColorMode,
-    useColorModeValue
+    useColorModeValue,
+    useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useForm } from 'react-hook-form'
@@ -16,6 +17,7 @@ import { signIn, signOut, useSession } from 'next-auth/react'
 export default function LoginPage() {
     const { toggleColorMode } = useColorMode()
     const formBackground = useColorModeValue("gray.100", "gray.700")
+    const toast = useToast()
     const {
         handleSubmit,
         register,
@@ -26,12 +28,22 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
 
     async function onSubmit(values:any) {
-        const result = await signIn("credentials", {
+        const result:any = await signIn("credentials", {
             redirect: false,
             'email' : username,
             'password' : password,
          });
-         console.log('error ---> ', result);
+        console.log('error ---> ', result.status);
+        
+        if(result.status === 401) {
+            toast({
+                title: 'Анхааруулга',
+                description: 'Та бүртгэлгүй байна.',
+                status: 'warning',
+                position: 'top-right',
+                isClosable: true,
+              })
+        }
     }
 
     return (
