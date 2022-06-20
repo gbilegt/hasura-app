@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
 
-const HASURA_ENDPOINT = process.env.NEXT_PUBLIC_HASURA_PROJECT_ENDPOINT;
+const HASURA_ENDPOINT = process.env.HASURA_PROJECT_ENDPOINT;
 
 if (!HASURA_ENDPOINT) {
   throw new Error("HASURA_PROJECT_ENDPOINT env var missing!");
