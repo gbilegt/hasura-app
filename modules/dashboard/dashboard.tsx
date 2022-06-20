@@ -11,7 +11,7 @@ import {
   } from '@chakra-ui/react'
 import Layouts from "../../components/Layouts"
 
-export default function Dashboard() {
+export default function Dashboard(session:any) {
     return (
         <Layouts>
              Dashboard

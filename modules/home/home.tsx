@@ -11,12 +11,12 @@ import {
   } from '@chakra-ui/react'
 import Layouts from "../../components/Layouts"
 
-  export default function Home() {
+export default function Home(session:any) {
     return (
         <Layouts>
              <TableContainer>
             <Table variant='simple'>
-                <TableCaption>Imperial to metric conversion factors</TableCaption>
+                <TableCaption>{session?.firstName}</TableCaption>
                 <Thead>
                 <Tr>
                     <Th>To convert</Th>

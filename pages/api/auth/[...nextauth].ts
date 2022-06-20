@@ -1,7 +1,12 @@
-import NextAuth from "next-auth"
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import axios from 'axios'
+import axios from "axios";
 
+const HASURA_ENDPOINT = process.env.HASURA_PROJECT_ENDPOINT;
+
+if (!HASURA_ENDPOINT) {
+  throw new Error("HASURA_PROJECT_ENDPOINT env var missing!");
+}
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 export default NextAuth({
@@ -15,66 +20,74 @@ export default NextAuth({
       // e.g. domain, username, password, 2FA token, etc.
       // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
-        username: { label: "Username", type: "text"},
-        password: { label: "Password", type: "password" }
-      }, 
+        email: { label: "email", type: "text" },
+        password: { label: "password", type: "password" },
+      },
       async authorize(credentials, req) {
         try {
-            // Add logic here to look up the user from the credentials supplied
-            // const user = {}
-            const res = await axios.post("" + process.env.BACK_URL,
-            {
-                query: `query user($username: String!, $password: String!) {
-                    Users(where: {username: {_eq: $username}, password: {_eq: $password}}) {
-                        username
-                        firstName
-                    }
-                }`,
+          // Add logic here to look up the user from the credentials supplied
+          // const user = {}
+          const res = await axios
+            .post(
+              HASURA_ENDPOINT,
+              {
+                query: `query user($email: String!, $password: String!) {
+                  users(where: {email: {_eq: $email}, password: {_eq: $password}}) {
+                      id
+                      firstName
+                  }
+              }`,
                 variables: {
-                    username: credentials?.username,
-                    password: credentials?.password,
-                }
-            },
-            {
-            headers: {
-                accept: '*/*',
-                'Content-Type': 'application/json'
-            }
-            }).catch(function (error) {
-                if (error.response) {
-                  // The request was made and the server responded with a status code
-                  // that falls out of the range of 2xx
-                  console.log(error.response.data);
-                  console.log(error.response.status);
-                  console.log(error.response.headers);
-                } else if (error.request) {
-                  // The request was made but no response was received
-                  // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                  // http.ClientRequest in node.js
-                  console.log(error.request);
-                } else {
-                  // Something happened in setting up the request that triggered an Error
-                  console.log('Error', error.message);
-                }
-                console.log(error.config);
-              });
+                  email: credentials?.email,
+                  password: credentials?.password,
+                },
+              },
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-hasura-admin-secret": process.env.HASURA_ADMIN_SECRET + "",
+                },
+              }
+            )
+            .catch(function (error) {
+              if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+              } else if (error.request) {
+                // The request was made but no response was received
+                // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                // http.ClientRequest in node.js
+                console.log(error.request);
+              } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log("Error", error.message);
+              }
+              console.log(error.config);
+            });
 
-            const user = res?.data
-            
+          // console.log("res==>", res?.data);
+
+          const users = res?.data?.data.users;
+
+          if (users.length > 0) {
+            const [user] = users;
             if (user) {
-            // Any object returned will be saved in `user` property of the JWT
-            return user
-            } else {
-            // If you return null then an error will be displayed advising the user to check their details.
-            return null
-            
-            // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter        
+              // Any object returned will be saved in `user` property of the JWT
+              return user;
             }
-        } catch(error) {
-            console.log('error ---> ', error);
+          }
+
+          // If you return null then an error will be displayed advising the user to check their details.
+          // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
+        } catch (error) {
+          console.log("error ---> ", error);
         }
-      }
-    })
+        return null;
+      },
+    }),
   ],
   // The secret should be set to a reasonably long random string.
   // It is used to sign cookies and to sign and encrypt JSON Web Tokens, unless
@@ -112,9 +125,9 @@ export default NextAuth({
   // pages is not specified for that route.
   // https://next-auth.js.org/configuration/pages
   pages: {
-    signIn: '/auth/signin',  // Displays signin buttons
-    signOut: '/auth/signout', // Displays form with sign out button
-    error: '/auth/error', // Error code passed in query string as ?error=
+    signIn: "/auth/signin", // Displays signin buttons
+    signOut: "/auth/signout", // Displays form with sign out button
+    error: "/auth/error", // Error code passed in query string as ?error=
     // verifyRequest: '/auth/verify-request', // Used for check email page
     // newUser: null // If set, new users will be directed here on first sign in
   },
@@ -141,4 +154,4 @@ export default NextAuth({
 
   // Enable debug messages in the console if you are having problems
   debug: false,
-})
+});
