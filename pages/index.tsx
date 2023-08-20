@@ -6,8 +6,8 @@ import { Spinner, SpinnerProps } from "@chakra-ui/react";
 
 export default function IndexPage(props: SpinnerProps) {
   const { data: session } = useSession();
+
     if(session) {
-      console.log('shiba -----> ');
       return <Home session={session} />
     }
     if(!session) {

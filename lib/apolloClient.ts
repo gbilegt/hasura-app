@@ -23,7 +23,7 @@ function createApolloClient() {
     },
   });
 
-  const GRAPHQL_ENDPOINT = process.env.BACK_URL;
+  const GRAPHQL_ENDPOINT = process.env.HASURA_PROJECT_ENDPOINT;
 
   const link = createHttpLink({
     uri: GRAPHQL_ENDPOINT,

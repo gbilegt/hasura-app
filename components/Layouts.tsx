@@ -28,8 +28,6 @@ import {
 import {
   FiHome,
   FiTrendingUp,
-  FiCompass,
-  FiStar,
   FiSettings,
   FiMenu,
   FiBell,
@@ -37,6 +35,9 @@ import {
   FiSun,
   FiMoon,
 } from 'react-icons/fi';
+import { FaCar } from 'react-icons/fa';
+import { IoIosConstruct } from 'react-icons/io';
+import { TfiAnnouncement } from 'react-icons/tfi';
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
 import { signOut } from "next-auth/react";
@@ -47,10 +48,10 @@ interface LinkItemProps {
 }
 const LinkItems: Array<LinkItemProps> = [
 { name: 'Home', icon: FiHome },
+{ name: 'Car', icon: FaCar },
+{ name: 'Work', icon: IoIosConstruct },
+{ name: 'Other', icon: TfiAnnouncement },
 { name: 'Dashboard', icon: FiTrendingUp },
-{ name: 'Explore', icon: FiCompass },
-{ name: 'Favourites', icon: FiStar },
-{ name: 'Settings', icon: FiSettings },
 ];
 
 export default function Layouts({
